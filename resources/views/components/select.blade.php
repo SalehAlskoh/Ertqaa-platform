@@ -1,0 +1,2 @@
+@props(['name', 'label', 'required' => false, 'help' => null])
+<div class="field"><label class="field-label" for="{{ $name }}">{{ $label }}@if($required)<span class="required-mark" aria-hidden="true">*</span>@endif</label><select {{ $attributes->class(['input']) }} id="{{ $name }}" name="{{ $name }}" @required($required) @if($errors->has($name)) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif>{{ $slot }}</select>@if($help)<p class="field-help">{{ $help }}</p>@endif @error($name)<p class="field-error" id="{{ $name }}-error">{{ $message }}</p>@enderror</div>

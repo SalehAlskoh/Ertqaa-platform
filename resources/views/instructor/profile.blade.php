@@ -1,0 +1,4 @@
+<x-layout title="ملفي المهني">
+    <x-page-heading title="ملفي المهني" eyebrow="مساحة المحاضر" description="معلوماتك المهنية المعروضة لطلاب المركز."><a class="button button-secondary" href="{{ route('instructor.groups.index') }}">مجموعاتي التدريبية</a></x-page-heading>
+    <section class="panel max-w-4xl"><h2 class="panel-heading">{{ $instructor->user?->name }}</h2><div class="panel-body"><dl class="detail-list"><div><dt>المسمى المهني</dt><dd>{{ $instructor->professional_title ?: 'غير محدد' }}</dd></div><div><dt>سنوات الخبرة</dt><dd>{{ $instructor->experience_years ?? 'غير محددة' }}</dd></div></dl><div class="form-section mt-7"><h3 class="section-title">نبذة مهنية</h3><p class="detail-prose">{{ $instructor->biography ?: 'لم تتم إضافة نبذة مهنية بعد.' }}</p></div><p class="field-help mt-7">لتحديث معلوماتك المهنية، تواصل مع إدارة المركز.</p></div></section>
+</x-layout>

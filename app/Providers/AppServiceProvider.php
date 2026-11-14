@@ -24,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('manage-catalog', fn (User $u) => $u->hasRole('admin', 'staff'));
         Gate::define('manage-accounts', fn (User $u) => $u->hasRole('admin'));
         Gate::define('teach', fn (User $u) => $u->hasRole('instructor'));
+        Gate::define('study', fn (User $u) => $u->hasRole('student'));
     }
 }

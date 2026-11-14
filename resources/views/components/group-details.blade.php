@@ -1,8 +1,55 @@
 @props(['trainingGroup'])
-<div class="detail-layout">
-    <div class="space-y-6">
-        <section class="panel"><h2 class="panel-heading">عن المجموعة التدريبية</h2><div class="panel-body"><dl class="detail-list"><div><dt>الكورس</dt><dd>{{ $trainingGroup->course?->title }}</dd></div><div><dt>التصنيف</dt><dd>{{ $trainingGroup->course?->category?->name ?? 'غير محدد' }}</dd></div><div><dt>رمز المجموعة</dt><dd dir="ltr" class="text-right">{{ $trainingGroup->code }}</dd></div><div><dt>الحالة</dt><dd><x-badge :status="$trainingGroup->status" /></dd></div><div><dt>فتح التسجيل · توقيت طرابلس</dt><dd><x-date :value="$trainingGroup->registration_opens_at" /></dd></div><div><dt>إغلاق التسجيل · توقيت طرابلس</dt><dd><x-date :value="$trainingGroup->registration_closes_at" /></dd></div></dl></div></section>
-        <section class="panel"><h2 class="panel-heading">المحاضر</h2><div class="panel-body"><h3 class="text-lg font-bold text-forest">{{ $trainingGroup->instructor?->user?->name ?? 'غير محدد' }}</h3>@if($trainingGroup->instructor?->professional_title)<p class="mt-1 text-sm text-stone-600">{{ $trainingGroup->instructor->professional_title }}</p>@endif @if($trainingGroup->instructor?->biography)<p class="detail-prose mt-4">{{ $trainingGroup->instructor->biography }}</p>@endif @if($trainingGroup->instructor?->experience_years !== null)<p class="mt-4 text-xs text-stone-600">سنوات الخبرة: {{ $trainingGroup->instructor->experience_years }}</p>@endif</div></section>
+<div class="group-detail-grid">
+    <aside class="group-detail-side">
+        <section class="panel">
+            <h2 class="panel-heading"><x-icon name="info" :size="19" />المعلومات الأساسية</h2>
+            <div class="panel-body">
+                <div class="instructor-mini">
+                    <span class="instructor-initial" aria-hidden="true">{{ mb_substr($trainingGroup->instructor?->user?->name ?? 'م', 0, 1) }}</span>
+                    <div><p>المحاضر</p><h3>{{ $trainingGroup->instructor?->user?->name ?? 'غير محدد' }}</h3>
+                        @if($trainingGroup->instructor?->professional_title)
+                            <p>{{ $trainingGroup->instructor->professional_title }}</p>
+                        @endif
+                    </div>
+                </div>
+                <dl class="logistic-list">
+                    <div class="logistic-item"><x-icon name="tag" :size="19" /><div><dt>الرسوم المعروضة</dt><dd class="logistic-fee">
+                        @if($trainingGroup->fee_amount !== null)
+                            {{ number_format((float)$trainingGroup->fee_amount, 2) }} <span class="text-xs font-semibold">{{ $trainingGroup->currency_code }}</span>
+                        @else
+                            <span class="text-base">غير محددة</span>
+                        @endif
+                    </dd><p class="field-help mt-1">تُستوفى الرسوم حضوريًا عند التأكيد النهائي. لا توجد مدفوعات إلكترونية.</p></div></div>
+                    <div class="logistic-item"><x-icon name="calendar" :size="19" /><div><dt>فتح التسجيل · توقيت طرابلس</dt><dd><x-date :value="$trainingGroup->registration_opens_at" /></dd></div></div>
+                    <div class="logistic-item"><x-icon name="calendar" :size="19" /><div><dt>إغلاق التسجيل · توقيت طرابلس</dt><dd><x-date :value="$trainingGroup->registration_closes_at" /></dd></div></div>
+                    <div class="logistic-item"><x-icon name="seat" :size="19" /><div><dt>السعة الكلية</dt><dd>{{ $trainingGroup->capacity }} مقعدًا</dd></div></div>
+                </dl>
+                <div class="notice notice-info"><x-icon name="info" :size="17" /><span>القبول المبدئي يحجز المقعد مؤقتًا. التأكيد النهائي لدى موظف مخوّل في المركز.</span></div>
+            </div>
+        </section>
+    </aside>
+    <div class="group-detail-main">
+        <section class="panel">
+            <h2 class="panel-heading"><x-icon name="book" :size="19" />عن الكورس والمجموعة</h2>
+            <div class="panel-body">
+                <p class="detail-prose">{{ $trainingGroup->course?->description ?: 'لم تُضف تفاصيل إضافية للكورس بعد.' }}</p>
+                <dl class="detail-list mt-6">
+                    <div><dt>الكورس</dt><dd>{{ $trainingGroup->course?->title }}</dd></div>
+                    <div><dt>التصنيف</dt><dd>{{ $trainingGroup->course?->category?->name ?? 'غير محدد' }}</dd></div>
+                    <div><dt>رمز المجموعة</dt><dd><bdi>{{ $trainingGroup->code }}</bdi></dd></div>
+                    <div><dt>حالة المجموعة</dt><dd><x-badge :status="$trainingGroup->status" /></dd></div>
+                </dl>
+            </div>
+        </section>
+        <section class="panel">
+            <h2 class="panel-heading"><x-icon name="user" :size="19" />نبذة عن المحاضر</h2>
+            <div class="panel-body">
+                <p class="detail-prose">{{ $trainingGroup->instructor?->biography ?: 'لم تتم إضافة نبذة مهنية بعد.' }}</p>
+                @if($trainingGroup->instructor?->experience_years !== null)
+                    <p class="field-help mt-4">سنوات الخبرة: <strong class="text-forest">{{ $trainingGroup->instructor->experience_years }}</strong></p>
+                @endif
+            </div>
+        </section>
+        <div class="group-section-note"><x-icon name="info" :size="20" /><p>بعد الموافقة المبدئية، يجب إتمام التسجيل حضوريًا خلال مهلة الحجز المعروضة في الطلب. تنتهي الحجوزات غير المؤكدة تلقائيًا دون تسجيل نهائي.</p></div>
     </div>
-    <aside class="panel"><h2 class="panel-heading">معلومات الحضور</h2><div class="panel-body"><div class="metric-row"><div class="metric"><p class="metric-value">{{ $trainingGroup->capacity }}</p><p class="metric-label">السعة الكلية</p></div></div><div class="mt-6 border-t border-stone-200 pt-5"><p class="text-xs text-stone-500">الرسوم المعروضة</p><p class="mt-2 text-xl font-bold text-forest">@if($trainingGroup->fee_amount !== null){{ number_format((float)$trainingGroup->fee_amount, 2) }} <span class="text-sm">{{ $trainingGroup->currency_code }}</span>@else<span class="text-base">غير محددة</span>@endif</p><p class="field-help mt-3">الرسوم للمعلومة فقط؛ لا تتوفر عمليات دفع عبر المنصة.</p></div><p class="notice notice-info mt-6 mb-0 text-xs">التسجيل غير متاح حاليًا.</p></div></aside>
 </div>

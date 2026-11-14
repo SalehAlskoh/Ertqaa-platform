@@ -17,6 +17,11 @@ class TrainingGroupPolicy
         return $u->hasRole('admin', 'staff');
     }
 
+    public function viewStudents(User $u, TrainingGroup $g): bool
+    {
+        return $this->view($u, $g);
+    }
+
     public function update(User $u, TrainingGroup $g): bool
     {
         return $this->create($u);

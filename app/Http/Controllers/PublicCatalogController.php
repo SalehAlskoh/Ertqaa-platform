@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\CourseCategory;
+use App\Models\EnrollmentApplication;
 use App\Models\TrainingGroup;
+use App\Services\TrainingGroupService;
 use Illuminate\Http\Request;
 
 class PublicCatalogController extends Controller
@@ -28,10 +30,16 @@ class PublicCatalogController extends Controller
         }))->when($r->filled('course'), fn ($q) => $q->where('course_id', $r->input('course')))->latest()->paginate(12)->withQueryString(), 'courses' => Course::where('is_published', true)->orderBy('title')->get()]);
     }
 
-    public function group(TrainingGroup $trainingGroup)
+    public function group(TrainingGroup $trainingGroup, TrainingGroupService $service)
     {
         abort_unless($trainingGroup->status === 'published' && $trainingGroup->course->is_published, 404);
 
-        return view('public.groups.show', ['trainingGroup' => $trainingGroup->load(['course.category', 'instructor.user'])]);
+        [$occupiedSeats, $reservedSeats] = $service->occupancy($trainingGroup);
+        $application = auth()->check() ? $trainingGroup->applications()->where('student_user_id', auth()->id())->first() : null;
+        $canApply = auth()->user()?->can('create', EnrollmentApplication::class)
+            && ! $application && now()->gte($trainingGroup->registration_opens_at) && now()->lt($trainingGroup->registration_closes_at)
+            && $occupiedSeats + $reservedSeats < $trainingGroup->capacity;
+
+        return view('public.groups.show', ['trainingGroup' => $trainingGroup->load(['course.category', 'instructor.user'])] + compact('application', 'canApply', 'occupiedSeats', 'reservedSeats'));
     }
 }

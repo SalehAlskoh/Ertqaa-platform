@@ -8,6 +8,22 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class EnrollmentApplication extends Model
 {
+    public const STATUSES = ['pending', 'awaiting_confirmation', 'rejected', 'expired', 'cancelled', 'completed'];
+
+    public function getEffectiveStatusAttribute(): string
+    {
+        return $this->status === 'awaiting_confirmation' && (! $this->offer_expires_at || $this->offer_expires_at->lte(now())) ? 'expired' : $this->status;
+    }
+
+    public function scopeEffectiveStatus($query, string $status)
+    {
+        if ($status === 'expired') {
+            return $query->where(fn ($q) => $q->where('status', 'expired')->orWhere(fn ($q) => $q->where('status', 'awaiting_confirmation')->where(fn ($q) => $q->whereNull('offer_expires_at')->orWhere('offer_expires_at', '<=', now()))));
+        }
+
+        return $query->where('status', $status)->when($status === 'awaiting_confirmation', fn ($q) => $q->where('offer_expires_at', '>', now()));
+    }
+
     protected $fillable = ['student_user_id', 'training_group_id', 'status', 'reviewed_by_user_id', 'reviewed_at', 'rejection_reason', 'offer_expires_at'];
 
     protected function casts(): array

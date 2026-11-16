@@ -11,7 +11,7 @@ class FitsTextColumn implements ValidationRule
     {
         // TEXT is byte-limited; leave room for the notification's Arabic prefix.
         if (is_string($value) && strlen($value) > 65000) {
-            $fail('النص طويل جدًا؛ اختصر السبب ثم أعد المحاولة.');
+            $fail('النص طويل جدًا؛ اختصره ثم أعد المحاولة.');
         }
     }
 }

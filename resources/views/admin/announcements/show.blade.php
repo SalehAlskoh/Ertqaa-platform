@@ -1,0 +1,5 @@
+<x-layout :title="$announcement->title">
+    <x-breadcrumbs :items="[['label'=>'إعلانات المركز','url'=>route('admin.announcements.index')],['label'=>'تفاصيل الإعلان']]" />
+    <x-page-heading title="مراجعة الإعلان العام" description="راجع النص وحالة النشر قبل إتاحته لزوار الموقع."><x-announcement-actions :announcement="$announcement" :show-details="false" /></x-page-heading>
+    <div class="announcement-reading-layout"><x-announcement-content :announcement="$announcement" management /><aside class="panel announcement-reading-aside"><h2>معلومات السجل</h2><dl class="detail-list"><div><dt>أنشئ في</dt><dd><x-date :value="$announcement->created_at" /></dd></div><div><dt>آخر تحديث</dt><dd><x-date :value="$announcement->updated_at" /></dd></div><div><dt>الجمهور</dt><dd>زوار المنصة وجميع الحسابات بعد النشر</dd></div></dl>@if($announcement->publication_status === 'published')<a class="button button-secondary" href="{{ route('announcements.show', $announcement) }}">عرض الصفحة العامة</a>@endif<p>إلغاء النشر يخفي الإعلان ويحفظ السجل. لا توجد عملية حذف في هذه الواجهة.</p></aside></div>
+</x-layout>

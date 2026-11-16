@@ -2,12 +2,25 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasPublicationState;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PublicAnnouncement extends Model
 {
-    protected $fillable = ['author_user_id', 'title', 'body', 'image_path', 'published_at'];
+    use HasPublicationState;
+
+    protected $fillable = ['title', 'body'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        $path = $this->image_path;
+        if (! is_string($path) || ! str_starts_with($path, 'announcements/') || str_contains($path, '..') || str_contains($path, '\\')) {
+            return null;
+        }
+
+        return asset('storage/'.$path);
+    }
 
     protected function casts(): array
     {

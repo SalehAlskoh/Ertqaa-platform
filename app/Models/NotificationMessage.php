@@ -11,6 +11,11 @@ class NotificationMessage extends Model
 
     public const UPDATED_AT = null;
 
+    public function getStudentAnnouncementIdAttribute(): ?int
+    {
+        return preg_match('/\Astudent_announcement:([1-9][0-9]{0,18})\z/', $this->type, $matches) ? (int) $matches[1] : null;
+    }
+
     protected function casts(): array
     {
         return ['created_at' => 'datetime'];

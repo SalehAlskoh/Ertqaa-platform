@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicationReviewController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupStudentsController;
 use App\Http\Controllers\InstructorAreaController;
 use App\Http\Controllers\InstructorController;
@@ -29,6 +30,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'storeRegistration'])->middleware('throttle:10,1')->name('register.store');
 });
 Route::middleware(['auth', 'active'])->group(function () {
+    Route::get('admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
+    Route::get('staff/dashboard', [DashboardController::class, 'staff'])->name('staff.dashboard');
+    Route::get('instructor/dashboard', [DashboardController::class, 'instructor'])->name('instructor.dashboard');
+    Route::get('student/dashboard', [DashboardController::class, 'student'])->name('student.dashboard');
     Route::get('lectures/{lecture}', [LectureController::class, 'show'])->name('lectures.show');
     Route::get('notifications', [InternalNotificationController::class, 'index'])->name('notifications.index');
     Route::patch('notifications/{notificationRecipient}/read', [InternalNotificationController::class, 'read'])->name('notifications.read');

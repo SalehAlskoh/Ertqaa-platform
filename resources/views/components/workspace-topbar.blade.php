@@ -7,7 +7,7 @@
 <header class="workspace-topbar">
     <div class="topbar-context">
         <button class="icon-button drawer-toggle" type="button" data-drawer-open aria-expanded="false" aria-controls="workspace-sidebar" aria-label="فتح القائمة الجانبية"><x-icon name="menu" :size="22" /></button>
-        <a class="topbar-home" href="{{ route('home') }}"><x-icon name="home" :size="18" /><span>الرئيسية</span></a>
+        <a class="topbar-home" href="{{ route('dashboard') }}"><x-icon name="home" :size="18" /><span>لوحة التحكم</span></a>
         <x-icon name="chevron-left" :size="15" class="topbar-divider" />
         <span class="topbar-current">{{ $title }}</span>
     </div>

@@ -1,5 +1,19 @@
 <aside class="workspace-sidebar" id="workspace-sidebar" data-workspace-drawer aria-label="القائمة الجانبية" tabindex="-1">
     <div class="sidebar-brand"><x-brand /><button class="icon-button sidebar-close" type="button" data-drawer-close aria-label="إغلاق القائمة"><x-icon name="close" /></button></div>
+    <nav class="sidebar-nav dashboard-role-navigation" aria-label="لوحات التحكم بحسب أدوارك">
+        @can('dashboard-admin')
+            <a class="sidebar-link" href="{{ route('admin.dashboard') }}" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif><x-icon name="grid" /><span>لوحة المدير</span></a>
+        @endcan
+        @can('dashboard-staff')
+            <a class="sidebar-link" href="{{ route('staff.dashboard') }}" @if(request()->routeIs('staff.dashboard')) aria-current="page" @endif><x-icon name="grid" /><span>لوحة الموظف</span></a>
+        @endcan
+        @can('dashboard-instructor')
+            <a class="sidebar-link" href="{{ route('instructor.dashboard') }}" @if(request()->routeIs('instructor.dashboard')) aria-current="page" @endif><x-icon name="grid" /><span>لوحة المحاضر</span></a>
+        @endcan
+        @can('dashboard-student')
+            <a class="sidebar-link" href="{{ route('student.dashboard') }}" @if(request()->routeIs('student.dashboard')) aria-current="page" @endif><x-icon name="grid" /><span>لوحة الطالب</span></a>
+        @endcan
+    </nav>
     <div class="sidebar-section-label">مساحة العمل</div>
     <nav class="sidebar-nav" aria-label="تنقل مساحة العمل">
         @can('manage-catalog')

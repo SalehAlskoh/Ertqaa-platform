@@ -1,5 +1,5 @@
 @props(['title' => 'ارتقاء'])
-@php($workspace = request()->routeIs('admin.*', 'instructor.*', 'student.*', 'notifications.*', 'lectures.*'))
+@php($workspace = request()->routeIs('admin.*', 'staff.*', 'instructor.*', 'student.*', 'notifications.*', 'lectures.*'))
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>

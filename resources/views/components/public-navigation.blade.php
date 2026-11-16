@@ -4,6 +4,9 @@
         <nav class="primary-nav" id="primary-navigation" aria-label="التنقل الرئيسي">
             <a href="{{ route('courses.index') }}" class="nav-link" @if(request()->routeIs('courses.*')) aria-current="page" @endif>الكورسات</a>
             <a href="{{ route('groups.index') }}" class="nav-link" @if(request()->routeIs('groups.*')) aria-current="page" @endif>المجموعات التدريبية</a>
+            @auth
+                <a href="{{ route('dashboard') }}" class="nav-link"><x-icon name="grid" :size="16" />لوحة التحكم</a>
+            @endauth
             @can('manage-catalog')
                 <a href="{{ route('admin.courses.index') }}" class="nav-link">إدارة المركز <x-icon name="arrow-left" :size="15" /></a>
             @endcan

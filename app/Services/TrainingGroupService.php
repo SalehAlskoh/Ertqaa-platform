@@ -7,6 +7,8 @@ use App\Models\TrainingGroup;
 use App\Models\User;
 use App\Support\Money;
 use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -14,10 +16,32 @@ class TrainingGroupService
 {
     public function occupancy(TrainingGroup $group): array
     {
-        $occupied = $group->applications()->whereHas('enrollment', fn ($q) => $q->where('status', 'active'))->count();
-        $reserved = $group->applications()->where('status', 'awaiting_confirmation')->where('offer_expires_at', '>', now())->whereDoesntHave('enrollment', fn ($q) => $q->where('status', 'active'))->count();
+        $at = now();
+        $occupied = $this->activeApplications($group->applications())->count();
+        $reserved = $this->reservedApplications($group->applications(), $at)->count();
 
         return [$occupied, $reserved];
+    }
+
+    private function activeApplications($query)
+    {
+        return $query->whereHas('enrollment', fn ($q) => $q->where('status', 'active'));
+    }
+
+    public function reservedApplications($query, ?CarbonInterface $at = null)
+    {
+        return $query->where('status', 'awaiting_confirmation')->where('offer_expires_at', '>', $at ?? now())
+            ->whereDoesntHave('enrollment', fn ($q) => $q->where('status', 'active'));
+    }
+
+    public function withOccupancy(Builder $query, ?CarbonInterface $at = null): Builder
+    {
+        $at ??= now();
+
+        return $query->withCount([
+            'applications as occupied_seats' => fn ($q) => $this->activeApplications($q),
+            'applications as reserved_seats' => fn ($q) => $this->reservedApplications($q, $at),
+        ]);
     }
 
     public function save(array $data, ?TrainingGroup $group = null): TrainingGroup

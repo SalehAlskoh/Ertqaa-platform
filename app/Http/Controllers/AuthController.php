@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Role;
 use App\Models\User;
+use App\Support\IntendedRedirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +39,7 @@ class AuthController extends Controller
         return redirect()->route('profile.edit')->setStatusCode(303)->with('status', 'تم إنشاء حساب الطالب.');
     }
 
-    public function authenticate(Request $request)
+    public function authenticate(Request $request, IntendedRedirect $redirect)
     {
         $data = $request->validate(['email' => ['required', 'email', 'max:255'], 'password' => ['required', 'string'], 'remember' => ['nullable', 'boolean']]);
         $data['email'] = mb_strtolower(trim($data['email']));
@@ -52,6 +53,11 @@ class AuthController extends Controller
         }
         RateLimiter::clear($key);
         $request->session()->regenerate();
+
+        $intended = $redirect->resolve($request, $request->session()->pull('url.intended'));
+        if ($intended !== null) {
+            return redirect()->to($intended);
+        }
 
         return redirect()->route('dashboard');
     }
@@ -69,6 +75,12 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        return redirect()->route($user->hasRole('admin', 'staff') ? 'admin.courses.index' : ($user->hasRole('instructor') ? 'instructor.groups.index' : 'profile.edit'));
+        foreach (['admin', 'staff', 'instructor', 'student'] as $role) {
+            if ($user->hasRole($role)) {
+                return redirect()->route($role.'.dashboard');
+            }
+        }
+
+        abort(403);
     }
 }
